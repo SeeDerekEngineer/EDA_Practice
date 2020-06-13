@@ -1,4 +1,5 @@
 #Obtained from https://medium.com/swlh/a-complete-guide-to-exploratory-data-analysis-and-data-cleaning-dd282925320f
+#and https://towardsdatascience.com/an-extensive-guide-to-exploratory-data-analysis-ddd99a03199e
 
 import pandas as pd
 import seaborn as sns
@@ -9,17 +10,21 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 train = pd.read_csv("train.csv")
 
-print(train.head())
+print(train.head()) #Prints the first 5 rows of the dataset
+print(train.shape) #rows and columns
 
-train.rename(columns={'Id': 'id', 'PID': 'pid', 'MS SubClass': 'ms_subclass',}, inplace=True)
+train.rename(columns={'Id': 'id', 'PID': 'pid', 'MS SubClass': 'ms_subclass',}, inplace=True) #rename columns
+print(train.columns) #prints the name of all columns in the dataset
 
+train.columns = [i.replace(' ', '_').lower() for i in train.columns] #This replaces the spaces with underscores
+                                                                     #and puts everything in lower case for each column.
 print(train.columns)
 
-train.columns = [i.replace(' ', '_').lower() for i in train.columns]
+print(train.isna().sum()) #gives the summary of null rows per column.
+print("Number of Unique Values")
+print(train.nunique()) #gives the number of unique values for each variable
 
-print(train.columns)
-
-def ames_eda(df):
+def summary_eda(df):
     eda_df = {}
     eda_df['null_sum'] = df.isnull().sum()
     eda_df['null_pct'] = df.isnull().mean()
@@ -34,7 +39,7 @@ def ames_eda(df):
     return pd.DataFrame(eda_df)
 
 
-summaryStatistics = ames_eda(train)
+summaryStatistics = summary_eda(train)
 
 print(summaryStatistics)
 
@@ -49,14 +54,18 @@ sorted_correlations = correlations.sort_values('abs', ascending=False)[0]
 fig, ax = plt.subplots(figsize=(10,20))
 sns.heatmap(sorted_correlations.to_frame(), cmap='coolwarm', annot=True, vmin=-1, vmax=1, ax=ax)
 
-plt.show()
+#plt.show()
 
 sns.boxplot(train['centralair'],
         train['saleprice']).set_title('Central Air vs. Sale Price')
 
-plt.show()
+#plt.show()
 
 sns.boxplot(train['kitchenqual'],
             train['saleprice']).set_title('Kitchen Quality vs. Sale Price')
 
-plt.show()
+#plt.show()
+
+sns.pairplot(train) #Scatterplot between all variables
+
+#plt.show()
